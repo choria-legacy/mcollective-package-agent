@@ -101,9 +101,16 @@ module MCollective
         end
 
         describe '#status' do
+          it 'should return the package status' do
+            provider.expects(:properties)
+            package.status
+          end
+        end
+
+        describe '#provider' do
           class Puppet; class Type; end; end
 
-          it 'should return the package status' do
+          it 'should load the provider only once' do
             package.unstub(:provider)
             package.stubs(:require)
 
@@ -117,14 +124,9 @@ module MCollective
           end
         end
 
-        describe '#provider' do
-          it 'should load the provider only once' do
-          end
-        end
-
         describe '#absent?' do
           it 'should return true if the package is absent' do
-            provider.stubs(:properties).returns(:ensure => 'absent')
+            provider.stubs(:properties).returns(:ensure => :absent)
             package.send(:absent?).should be_true
           end
 
