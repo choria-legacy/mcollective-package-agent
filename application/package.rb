@@ -32,17 +32,18 @@ END_OF_USAGE
         if ARGV.size < 2
           handle_message(:raise, 1)
         else
-          action = ARGV.shift
-          package = ARGV.shift
 
-          action_list = ['install', 'uninstall', 'purge', 'update', 'status']
+          valid_actions = ['install', 'uninstall', 'purge', 'update', 'status']
 
-          unless action_list.include?(action)
-            handle_message(:raise, 2, action_list.join(', '))
+          if valid_actions.include?(ARGV[0])
+            configuration[:action] = ARGV.shift
+            configuration[:package] = ARGV.shift
+          elsif valid_actions.include?(ARGV[1])
+            configuration[:package] = ARGV.shift
+            configuration[:action] = ARGV.shift
+          else
+            handle_message(:raise, 2, valid_actions.join(', '))
           end
-
-          configuration[:package] = package
-          configuration[:action] = action
         end
       end
 

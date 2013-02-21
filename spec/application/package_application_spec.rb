@@ -39,13 +39,26 @@ module MCollective
           }.to raise_error 'Action has to be one of install, uninstall, purge, update, status'
         end
 
-        it 'should set the package and action' do
+        it 'should parse "action" "package" correctly' do
+          config = {}
+
           ARGV << 'install'
           ARGV << 'rspec'
 
-          configuration = {}
-          @app.post_option_parser(configuration)
-          configuration.should == {:package => 'rspec', :action => 'install'}
+          @app.post_option_parser(config)
+          config[:action].should == 'install'
+          config[:package].should == 'rspec'
+        end
+
+        it 'should parse "package" "action" correctly' do
+          config = {}
+
+          ARGV << 'rspec'
+          ARGV << 'install'
+
+          @app.post_option_parser(config)
+          config[:action].should == 'install'
+          config[:package].should == 'rspec'
         end
       end
 
