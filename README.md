@@ -59,18 +59,6 @@ Summary of Ensure:
 Finished processing 4 / 4 hosts in 393.68 ms
 ```
 
-## Data Plugin
-
-The Package agent also supplies a data plugin which uses the Package agent to
-check the current status of an installed package. The data plugin will return
-the epoch, arch, ensure, version, provider, name and release fields and can
-be used during discovery or any other place where where the MCollective
-discovery language is used.
-
-```
-mco rpc rpcutil ping -S "package('mypackage').ensure=absent"
-```
-
 ## Extending
 
 The default package agent achieves platform portability by using the Puppet
@@ -84,9 +72,6 @@ provider for this agent.
 The logic for the Puppet version of this agent is implemented in
 Util::Package::PuppetPackage, you can create a custom package implementation
 that overrides #install, #uninstall, #update, #purge and #status.
-
-To provide compatibility with the package data plugin #status should return
-the fields epoch, arch, ensure, version, provider, name and release.
 
 This agent defaults to Util::Package::PuppetPackage but if you have your own
 you can configure it in the config file using:
