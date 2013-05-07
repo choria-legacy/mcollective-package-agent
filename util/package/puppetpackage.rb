@@ -53,7 +53,7 @@ module MCollective
 
 	# Check whether the package was requested to be installed with a specific version
 	def no_version_requested?
-	 @options[:ensure].nil?
+	  @options[:ensure].nil?
 	end
 
         # Calls and cleans up the Puppet provider

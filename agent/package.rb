@@ -90,7 +90,7 @@ module MCollective
         end
 
 	unless pkgver.nil?
-	 provider_options['ensure'.to_sym] = pkgver
+	  provider_options['ensure'.to_sym] = pkgver
 	end
 
 
