@@ -21,6 +21,12 @@ END_OF_USAGE
              :description => "Assume yes on any prompts",
              :type        => :bool
 
+      option :version,
+             :arguments   => ["--version VERSION"],
+             :description => "Optional VERSION to pass to install",
+             :type        => String,
+             :required    => false
+
       def handle_message(action, message, *args)
         messages = {1 => 'Please specify package name and action',
                     2 => "Action has to be one of %s",
@@ -60,7 +66,7 @@ END_OF_USAGE
 
       def main
         pkg = rpcclient("package")
-        pkg_result = pkg.send(configuration[:action], :package => configuration[:package])
+        pkg_result = pkg.send(configuration[:action], :package => configuration[:package], :version => configuration[:version])
 
         if !pkg_result.empty?
           sender_width = pkg_result.map{|s| s[:sender]}.map{|s| s.length}.max + 3

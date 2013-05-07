@@ -3,7 +3,7 @@ module MCollective
     class Package<RPC::Agent
 
       action 'install' do
-        Package.do_pkg_action(request[:package], :install, reply)
+        Package.do_pkg_action(request[:package], :install, reply, request[:version])
       end
 
       action 'update' do
@@ -80,13 +80,17 @@ module MCollective
       #
       #   {:x => 'y'}
       #
-      def self.provider_options(provider)
+      def self.provider_options(provider, version = nil)
         provider_options = {}
 
         Config.instance.pluginconf.each do |k, v|
           if k =~ /package\.#{provider}/
             provider_options[k.split('.').last.to_sym] = v
           end
+        end
+
+        unless version.nil?
+          provider_options[:ensure] = version
         end
 
         provider_options
@@ -96,8 +100,8 @@ module MCollective
       # corresponds to the supplied action. The third arugment is an
       # in-out variable used to update the reply values in the case of
       # agents, and the value hash in the case of data plugins.
-      def self.do_pkg_action(package, action, reply)
-        provider = Package.load_provider_class(Package.package_provider).new(package, Package.provider_options(Package.package_provider))
+      def self.do_pkg_action(package, action, reply, version=nil)
+        provider = Package.load_provider_class(Package.package_provider).new(package, Package.provider_options(Package.package_provider, version))
         result = provider.send(action)
 
         if action == :status

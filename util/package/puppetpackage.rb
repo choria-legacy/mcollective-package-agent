@@ -3,7 +3,7 @@ module MCollective
     module Package
       class PuppetPackage<Base
         def install
-          unless absent?
+          if !absent? && no_version_requested?
             return {:status => status, :msg => 'Package is already installed'}
           else
             return {:output => call_action(:install), :status => status}
@@ -62,6 +62,11 @@ module MCollective
         def absent?
           [:absent, :purged].include?(provider.properties[:ensure])
         end
+
+	# Check whether the package was requested to be installed with a specific version
+	def no_version_requested?
+	  @options[:ensure].nil?
+	end
 
         # Calls and cleans up the Puppet provider
         def call_action(action)

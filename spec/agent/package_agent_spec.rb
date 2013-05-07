@@ -238,6 +238,15 @@ module MCollective
           Package.provider_options('rspec').should == {:k1 => 'v1', :k3 => 'v3'}
         end
 
+        it 'should set ensure to the version if supplied' do
+          config =  mock
+          Config.stubs(:instance).returns(config)
+          config.stubs(:pluginconf).returns({'package.rspec.k1' => 'v1',
+                                             'package.notrspec.k2' => 'v2',
+                                             'package.rspec.k3' => 'v3'})
+          Package.provider_options('rspec', '1.21').should == {:k1 => 'v1', :k3 => 'v3', :ensure => '1.21'}
+        end
+
         it 'should return an empty hash if no provider specific options are found' do
           config = mock
           Config.stubs(:instance).returns(config)
