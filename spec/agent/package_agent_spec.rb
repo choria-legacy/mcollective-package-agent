@@ -235,14 +235,14 @@ module MCollective
           config.stubs(:pluginconf).returns({'package.rspec.k1' => 'v1',
                                              'package.notrspec.k2' => 'v2',
                                              'package.rspec.k3' => 'v3'})
-          Package.provider_options('rspec').should == {:k1 => 'v1', :k3 => 'v3'}
+          Package.provider_options('rspec', nil).should == {:k1 => 'v1', :k3 => 'v3'}
         end
 
         it 'should return an empty hash if no provider specific options are found' do
           config = mock
           Config.stubs(:instance).returns(config)
           config.stubs(:pluginconf).returns({})
-          Package.provider_options('rspec').should == {}
+          Package.provider_options('rspec', nil).should == {}
         end
       end
 
