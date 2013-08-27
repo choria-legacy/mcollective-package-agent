@@ -3,7 +3,7 @@ metadata    :name        => "package",
             :author      => "R.I.Pienaar",
             :license     => "ASL 2.0",
             :version     => "4.2.0",
-            :url         => "https://github.com/puppetlabs/mcollective-plugins",
+            :url         => "https://github.com/puppetlabs/mcollective-package-agent",
             :timeout     => 180
 
 requires :mcollective => "2.2.1"
