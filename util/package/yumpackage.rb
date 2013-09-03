@@ -38,17 +38,11 @@ module MCollective
           result[:exitcode] = cmd.status.exitstatus
   
           raise "yumHelper.py failed, exit code was #{result[:exitcode]}" unless result[:exitcode] == 0
-          r = {}
-          JSON.parse(result[:output]).each do |k, v|
-            r[:"#{k}"] = v
-            if r[:status].is_a?(Hash)
-                h = {}
-                r[:status].each do |x ,y|
-                    h[:"#{x}"] = y
-                end
-                r[:status] = h 
-            end
-     	  end
+          r = JSON.parse(result[:output])
+          r = Hash[r.map{|(k,v)| [k.to_sym,v]}]
+          if r[:status].is_a?(Hash)
+            r[:status] = Hash[r[:status].map{|(k,v)| [k.to_sym,v]}]
+          end
           return r
         end
       end

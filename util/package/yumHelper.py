@@ -35,15 +35,16 @@ class YumHelper():
             pkg_list.append(p_dict)
         return pkg_list
 
-    def install(self, package, version=None):
+    def install(self, package):
         try:
-            p = self.yb.install(name=package, version=version)
+            p = self.yb.install(name=package)
             self.yb.buildTransaction()
             self.yb.processTransaction(rpmDisplay=NoOutputCallBack())
             if p:
                 p_dict = self._build_dict(p)[0]
             else:
-                p_dict = { 'status': 'already installed and/or latest version' }
+                p_dict = { 'msg': 'already installed and latest version',
+                           'status': {} }
         except yum.Errors.InstallError, e:
             p_dict = {'msg': str(e),
                       'status': 'Failed' }
@@ -51,15 +52,16 @@ class YumHelper():
             self.yb.closeRpmDB()
         return json.dumps(p_dict, sort_keys=True)
 
-    def remove(self, package, version=None):
+    def remove(self, package):
         try:
-            p = self.yb.remove(name=package, version=version)
+            p = self.yb.remove(name=package)
             self.yb.buildTransaction()
             self.yb.processTransaction(rpmDisplay=NoOutputCallBack())
             if p:
                 p_dict = self._build_dict(p)[0]
             else:
-                p_dict = { 'status': 'Package not installed' }
+                p_dict = { 'msg': 'Package not installed',
+                           'status': {} }
         except yum.Errors.InstallError, e:
             p_dict = {'msg': str(e),
                       'status': 'Failed' }
@@ -81,7 +83,8 @@ class YumHelper():
             elif len(p) == 1:
                 p_dict = self._build_dict(p)[0]
             else:
-                p_dict = { 'status': 'Everything is up to date' }
+                p_dict = { 'msg': 'Everything is up to date',
+                           'status': {} }
         except yum.Errors.InstallError, e:
             p_dict = {'msg': str(e),
                       'status': 'Failed' }
