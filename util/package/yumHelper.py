@@ -83,8 +83,7 @@ class YumHelper():
             elif len(p) == 1:
                 p_dict = self._build_dict(p)[0]
             else:
-                p_dict = { 'msg': 'Everything is up to date',
-                           'status': {} }
+                p_dict = { 'status': 'Everything is up to date' }
         except yum.Errors.InstallError, e:
             p_dict = {'msg': str(e),
                       'status': 'Failed' }
