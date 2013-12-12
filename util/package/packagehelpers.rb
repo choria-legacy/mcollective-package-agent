@@ -33,6 +33,19 @@ module MCollective
           return result
         end
 
+        def self.apt_clear_packages
+          raise 'Cannot find dpkg at /usr/bin/dpkg' unless File.exists?('/usr/bin/dpkg')
+          result = {:exitcode => nil,
+                    :output => ""}
+
+          cmd = Shell.new("/usr/bin/dpkg -l | grep '^iF' | awk '{ print $2}' | xargs sudo apt-get -y remove", :stdout => result[:output])
+          cmd.runcommand
+          result[:exitcode] = cmd.status.exitstatus
+
+          raise "dpkg clean failed, exit code was #{result[:exitcode]}" unless result[:exitcode] == 0
+          return result
+        end
+
         def self.packagemanager
           if File.exists?('/usr/bin/yum')
             return :yum

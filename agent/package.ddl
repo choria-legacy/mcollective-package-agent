@@ -132,6 +132,16 @@ action "apt_update", :description => "Update the apt cache" do
            :display_as => "Exit Code"
 end
 
+action "apt_clear_broken", :description => "Clear all partially configured packages" do
+    output :output,
+           :description => "Output from dpkg",
+           :display_as  => "Output"
+
+    output :exitcode,
+           :description => "The exitcode from dpkg",
+           :display_as => "Exit Code"
+end
+
 action "yum_checkupdates", :description => "Check for YUM updates" do
     display :always
 
