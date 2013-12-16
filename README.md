@@ -79,3 +79,17 @@ you can configure it in the config file using:
 ```
 plugin.package.provider = puppet
 ```
+
+## Running tests
+
+Ensure all required gems are installed
+
+```
+bundle
+```
+
+Run tests while under the bundle environment to ensure if other Gem versions are installed on your machine, they are not conflicting.
+
+```
+bundle exec rake test
+```
