@@ -102,11 +102,11 @@ module MCollective
 
         if action == :status
           result.each do |k,v|
-            reply[k] = v
+            reply[k] = v.to_s
           end
         else
           result[:status].each do |k,v|
-            reply[k] = v
+            reply[k] = v.to_s
           end
         end
 
