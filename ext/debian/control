@@ -1,0 +1,22 @@
+Source: mcollective-package
+Homepage: https://github.com/puppetlabs/mcollective-package-agent
+Section: utils
+Priority: extra
+Maintainer: Puppet Labs
+Build-Depends: cdbs, debhelper
+Standards-Version: 3.8.0
+
+Package: mcollective-package-agent
+Architecture: all
+Depends: mcollective-package-common(= ${binary:Version})
+Description: Install and uninstall software packages
+
+Package: mcollective-package-client
+Architecture: all
+Depends: mcollective-package-common(= ${binary:Version})
+Description: Install and uninstall software packages
+
+Package: mcollective-package-common
+Architecture: all
+Depends: mcollective-common(>= 2.2.1)
+Description: Install and uninstall software packages
