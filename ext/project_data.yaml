@@ -1,0 +1,17 @@
+---
+project: 'mcollective-package'
+author: 'Puppet Labs'
+email: 'info@puppetlabs.com'
+homepage: 'https://github.com/puppetlabs/mcollective-package-agent'
+summary: 'Install and uninstall software packages'
+description: 'Install and uninstall software packages'
+# files and gem_files are space separated lists
+files:
+  - agent
+  - application
+  - ext
+  - util
+# List of packaging related templates to evaluate before the tarball is packed
+templates:
+  - "ext/redhat/mcollective-package.spec.erb"
+  - "ext/debian/changelog.erb"
