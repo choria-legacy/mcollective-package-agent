@@ -112,7 +112,7 @@ module MCollective
 
         raise result[:msg] if result[:msg]
 
-        reply[:output] = result[:output] if result[:output]
+        reply[:output] = result[:output].to_s if result[:output]
       end
 
       private

@@ -2,7 +2,7 @@ metadata    :name        => "package",
             :description => "Install and uninstall software packages",
             :author      => "R.I.Pienaar",
             :license     => "ASL 2.0",
-            :version     => "4.2.1",
+            :version     => "4.2.2",
             :url         => "https://github.com/puppetlabs/mcollective-package-agent",
             :timeout     => 180
 
