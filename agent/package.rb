@@ -35,6 +35,12 @@ module MCollective
         reply[:output] = result[:output]
       end
 
+      action 'apt_clear_broken' do
+        result = package_helper.apt_clear_packages
+        reply[:output] = result[:output]
+        reply[:exitcode] = result[:exitcode]
+      end
+
       action 'checkupdates' do
         do_checkupdates_action('checkupdates')
       end

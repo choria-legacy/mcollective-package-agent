@@ -29,11 +29,11 @@ END_OF_USAGE
       end
 
       def post_option_parser(configuration)
-        if ARGV.size < 2
+        if ARGV.size < 1
           handle_message(:raise, 1)
         else
 
-          valid_actions = ['install', 'uninstall', 'purge', 'update', 'status']
+          valid_actions = ['install', 'uninstall', 'purge', 'update', 'status', 'apt_update', 'apt_clear_broken']
 
           if valid_actions.include?(ARGV[0])
             configuration[:action] = ARGV.shift
