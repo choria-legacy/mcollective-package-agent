@@ -122,6 +122,38 @@ module MCollective
             package.send(:provider)
             package.send(:provider)
           end
+
+          it 'should load the provider instances on windows' do
+            package.unstub(:provider)
+            package.stubs(:require)
+            type = mock
+            instance = mock
+            provider_class = mock
+            provider_class.expects(:instances).returns([instance])
+            instance.stubs(:name).returns("rspec")
+            instance.stubs(:package).returns("rspec")
+            type.stubs(:new).returns(type)
+            Puppet::Type.stubs(:type).returns(type)
+            type.stubs(:provider).returns(provider)
+            Util.stubs(:windows?).returns(true)
+            provider.stubs(:class).returns(provider_class)
+            provider.expects(:package=).with("rspec")
+
+            package.send(:provider)
+          end
+
+          it 'should return the provider object' do
+            package.unstub(:provider)
+            package.stubs(:require)
+
+            type = mock
+            type.stubs(:new).returns(type)
+            Puppet::Type.stubs(:type).returns(type)
+            type.stubs(:provider).returns(provider)
+
+            package.send(:provider).should == provider
+
+          end
         end
 
         describe '#absent?' do
