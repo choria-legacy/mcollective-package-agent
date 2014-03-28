@@ -129,6 +129,7 @@ module MCollective
             type = mock
             instance = mock
             provider_class = mock
+            provider_class.expects(:to_s).returns('Puppet::Type::Package::ProviderWindows')
             provider_class.expects(:instances).returns([instance])
             instance.stubs(:name).returns("rspec")
             instance.stubs(:package).returns("rspec")

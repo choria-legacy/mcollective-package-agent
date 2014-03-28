@@ -44,7 +44,8 @@ module MCollective
         def provider
           require 'puppet'
           @provider ||= Puppet::Type.type(:package).new({:name => @package}.merge(@options)).provider
-          if MCollective::Util.windows?
+
+          if @provider.class.to_s == 'Puppet::Type::Package::ProviderWindows'
             # the windows provider cannot uninstall unless you got the object
             # via instances, as uninstall is implemented in terms of
             # provider.package
