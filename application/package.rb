@@ -62,29 +62,31 @@ END_OF_USAGE
         pkg = rpcclient("package")
         pkg_result = pkg.send(configuration[:action], :package => configuration[:package])
 
-        sender_width = pkg_result.map{|s| s[:sender]}.map{|s| s.length}.max + 3
-        pattern = "%%%ds: %%s" % sender_width
+        if !pkg_result.empty?
+          sender_width = pkg_result.map{|s| s[:sender]}.map{|s| s.length}.max + 3
+          pattern = "%%%ds: %%s" % sender_width
 
-        pkg_result.each do |result|
-          if result[:statuscode] == 0
-            if pkg.verbose
-              puts(pattern % [result[:sender], result[:data][:ensure]])
-            else
-              if configuration[:action] == 'status'
-                if result[:data][:ensure] == 'absent'
-                  status = 'absent'
-                else
-                  status = "%s-%s.%s" % [result[:data][:name], result[:data][:ensure], result[:data][:arch]]
+          pkg_result.each do |result|
+            if result[:statuscode] == 0
+              if pkg.verbose
+                puts(pattern % [result[:sender], result[:data][:ensure]])
+              else
+                if configuration[:action] == 'status'
+                  if result[:data][:ensure] == 'absent'
+                    status = 'absent'
+                  else
+                    status = "%s-%s.%s" % [result[:data][:name], result[:data][:ensure], result[:data][:arch]]
+                  end
+                  puts(pattern % [result[:sender], status])
                 end
-                puts(pattern % [result[:sender], status])
               end
+            else
+              puts(pattern % [result[:sender], result[:statusmsg]])
             end
-          else
-            puts(pattern % [result[:sender], result[:statusmsg]])
           end
-        end
 
-        puts
+          puts
+        end
 
         printrpcstats :summarize => true, :caption => "%s Package results" % configuration[:action]
         halt(pkg.stats)
