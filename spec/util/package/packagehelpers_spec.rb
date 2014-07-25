@@ -100,6 +100,13 @@ module MCollective
             File.expects(:exists?).with('/usr/bin/apt-get').returns(true)
             PackageHelpers.packagemanager.should == :apt
           end
+
+          it 'should return zypper if zypper is present on the system' do
+            File.expects(:exists?).with('/usr/bin/yum').returns(false)
+            File.expects(:exists?).with('/usr/bin/apt-get').returns(false)
+            File.expects(:exists?).with('/usr/bin/zypper').returns(true)
+            PackageHelpers.packagemanager.should == :zypper
+          end
         end
 
         describe "checkupdates" do
@@ -112,6 +119,12 @@ module MCollective
           it 'should call #apt_checkupdates if apt is present on the system' do
             PackageHelpers.expects(:packagemanager).returns(:apt)
             PackageHelpers.expects(:apt_checkupdates)
+            PackageHelpers.checkupdates
+          end
+
+          it 'should call #zypper_checkupdates if zypper is present on the system' do
+            PackageHelpers.expects(:packagemanager).returns(:zypper)
+            PackageHelpers.expects(:zypper_checkupdates)
             PackageHelpers.checkupdates
           end
 
@@ -151,6 +164,38 @@ module MCollective
             result[:package_manager] == 'yum'
             result[:outdated_packages].should == [ {:package => 'package1', :version => '1.1.1', :repo => 'rspecrepo'},
                                                    {:package => 'package2', :version => '2.2.2', :repo => 'rspecrepo'}]
+          end
+        end
+
+        describe "zypper_checkupdates" do
+          it 'should raise if zypper cannot be foud on the system' do
+            File.expects(:exists?).with('/usr/bin/zypper').returns(false)
+
+            expect{
+              PackageHelpers.zypper_checkupdates
+            }.to raise_error 'Cannot find zypper at /usr/bin/zypper'
+          end
+
+          it 'should return the list of outdated packages' do
+            output = "S | Repository         | Name                            | Current Version        | Available Version        | Arch
+                      --+--------------------+---------------------------------+------------------------+--------------------------+-------
+                      v | Test_Repository    | Package1                        | 1.2.3-1                | 1.2.3-2                  | x86_64
+                      v | Test_Repository    | Package2                        | 0.1.1-1                | 0.2.2-2                  | x86_64"
+
+            File.expects(:exists?).with('/usr/bin/zypper').returns(true)
+            shell = mock
+            status = mock
+            Shell.stubs(:new).with('/usr/bin/zypper -q list-updates', :stdout => output).returns(shell)
+            shell.stubs(:runcommand)
+            shell.expects(:status).returns(status)
+            status.stubs(:exitstatus).returns(0)
+
+            result = PackageHelpers.zypper_checkupdates(output)
+            result[:exitcode].should == 0
+            result[:output].should == output
+            result[:package_manager] == 'zypper'
+            result[:outdated_packages].should == [ {:package => 'Package1', :version => '1.2.3-2', :repo => 'Test_Repository'},
+                                                   {:package => 'Package2', :version => '0.2.2-2', :repo => 'Test_Repository'}]
           end
         end
 

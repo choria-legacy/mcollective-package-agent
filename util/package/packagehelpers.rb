@@ -38,6 +38,8 @@ module MCollective
             return :yum
           elsif File.exists?('/usr/bin/apt-get')
             return :apt
+          elsif File.exists?('/usr/bin/zypper')
+            return :zypper
           end
         end
 
@@ -47,6 +49,8 @@ module MCollective
             return yum_checkupdates
           elsif manager == :apt
             return apt_checkupdates
+          elsif manager == :zypper
+            return zypper_checkupdates
           else
             raise 'Cannot find a compatible package system to check updates'
           end
@@ -72,6 +76,32 @@ module MCollective
               result[:outdated_packages] << {:package => pkg.strip,
                                              :version => ver.strip,
                                              :repo => repo.strip}
+            end
+          end
+
+          result
+        end
+
+        def self.zypper_checkupdates(output = "")
+          raise 'Cannot find zypper at /usr/bin/zypper' unless File.exists?('/usr/bin/zypper')
+
+          result = {:exitcode => nil,
+                    :output => output,
+                    :outdated_packages => [],
+                    :package_manager => 'zypper'}
+
+          cmd = Shell.new('/usr/bin/zypper -q list-updates', :stdout => result[:output])
+          cmd.runcommand
+          result[:exitcode] = cmd.status.exitstatus
+
+          result[:output].each_line do |line|
+            next if line =~ /^S\s/
+            next if line =~ /^--/
+            sup,repo,name,cur_ver,new_ver,arch = line.split('|')
+            if repo && name && new_ver
+              result[:outdated_packages] << {:package => name.strip,
+                                             :version => new_ver.strip,
+                                             :repo    => repo.strip}
             end
           end
 
