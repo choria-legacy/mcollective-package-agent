@@ -58,6 +58,21 @@ Summary of Ensure:
 
 Finished processing 4 / 4 hosts in 393.68 ms
 ```
+```
+% mco rpc package install package=openssl version=0.9.8k-7ubuntu8
+
+ * [ ============================================================> ] 4 / 4
+
+
+
+Summary of Ensure:
+
+   0.9.8k-7ubuntu8 = 4
+
+
+Finished processing 4 / 4 hosts in 18176.83 ms
+```
+
 
 ## Extending
 

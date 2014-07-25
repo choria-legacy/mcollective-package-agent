@@ -18,6 +18,16 @@ requires :mcollective => "2.2.1"
               :optional    => false,
               :maxlength   => 90
 
+  if act == 'install'
+        input :version,
+              :prompt      => "Package version"
+              :description => "Version of package to #{act}",
+              :type        => :string
+              :validation  => :shellsafe
+              :optional    => true,
+              :maxlength   => 90
+  end
+
         output :output,
                :description => "Output from the package manager",
                :display_as  => "Output"
