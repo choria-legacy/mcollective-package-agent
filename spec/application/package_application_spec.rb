@@ -110,7 +110,7 @@ module MCollective
 
         it 'should display the correct verbose output' do
           @app.stubs(:configuration).returns({:action => 'uninstall', :package => 'rspec'})
-          package.expects(:send).with('uninstall', :package => 'rspec').returns([{:sender => 'rspec',
+          package.expects(:send).with('uninstall', :package => 'rspec', :pkgver => nil).returns([{:sender => 'rspec',
                                                                                 :statuscode => 0,
                                                                                 :data => {:ensure => 'absent'}}])
           package.expects(:verbose).returns(true)
@@ -120,7 +120,7 @@ module MCollective
 
         it 'should not output for install, update, uninstall and purge' do
           @app.stubs(:configuration).returns({:action => 'uninstall', :package => 'rspec'})
-          package.expects(:send).with('uninstall', :package => 'rspec').returns([{:sender => 'rspec',
+          package.expects(:send).with('uninstall', :package => 'rspec', :pkgver => nil).returns([{:sender => 'rspec',
                                                                                 :statuscode => 0,
                                                                                 :data => {:ensure => 'absent'}}])
           package.expects(:verbose).returns(false)
@@ -130,7 +130,7 @@ module MCollective
 
         it 'should display the correct output for an absent package status' do
           @app.stubs(:configuration).returns({:action => 'status', :package => 'rspec'})
-          package.expects(:send).with('status', :package => 'rspec').returns([{:sender => 'rspec',
+          package.expects(:send).with('status', :package => 'rspec', :pkgver => nil).returns([{:sender => 'rspec',
                                                                                :statuscode => 0,
                                                                                :data => {:ensure => 'absent'}}])
           package.expects(:verbose).returns(false)
@@ -140,7 +140,7 @@ module MCollective
 
         it 'should display the correct output for an installed package status' do
           @app.stubs(:configuration).returns({:action => 'status', :package => 'rspec'})
-          package.expects(:send).with('status', :package => 'rspec').returns([{:sender => 'rspec',
+          package.expects(:send).with('status', :package => 'rspec', :pkgver => nil).returns([{:sender => 'rspec',
                                                                                 :statuscode => 0,
                                                                                 :data => {:ensure => '2.1',
                                                                                           :arch => 'x86',
