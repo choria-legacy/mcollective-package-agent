@@ -14,7 +14,6 @@ class YumHelper():
         self.yb.preconf.debuglevel = 0
         self.yb.preconf.errorlevel = 0
         self.yb.verbose_logger = logging.getLogger()
-        #self.yb.doConfigSetup()
 
         self.yb.doTsSetup()
         self.yb.doRpmDBSetup()
