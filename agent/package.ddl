@@ -20,10 +20,10 @@ requires :mcollective => "2.2.1"
 
   if act == 'install'
         input :version,
-              :prompt      => "Package version"
+              :prompt      => "Package version",
               :description => "Version of package to #{act}",
-              :type        => :string
-              :validation  => :shellsafe
+              :type        => :string,
+              :validation  => :shellsafe,
               :optional    => true,
               :maxlength   => 90
   end
