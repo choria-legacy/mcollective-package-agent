@@ -165,7 +165,7 @@ action "apt_checkupdates", :description => "Check for APT updates" do
            :description => "Output from APT",
            :display_as  => "Output"
 
-    output :oudated_packages,
+    output :outdated_packages,
            :description => "Outdated packages",
            :display_as  => "Outdated Packages"
 
