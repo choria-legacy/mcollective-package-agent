@@ -2,6 +2,11 @@
 
 Change history for mcollective-package.
 
+## 4.4.0
+
+* Add zypper provider for SLES (MCOP-224)
+* Add a version option to the install action (PR#1, PR#14)
+* Add a yum provider for RedHat variants (PR#3, PR#15)
 
 ## 4.3.1
 
