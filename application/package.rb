@@ -66,7 +66,11 @@ END_OF_USAGE
 
       def main
         pkg = rpcclient("package")
-        pkg_result = pkg.send(configuration[:action], :package => configuration[:package], :version => configuration[:version])
+        if configuration[:version].nil?
+          pkg_result = pkg.send(configuration[:action], :package => configuration[:package])
+        else
+          pkg_result = pkg.send(configuration[:action], :package => configuration[:package], :version => configuration[:version])
+        end
 
         if !pkg_result.empty?
           sender_width = pkg_result.map{|s| s[:sender]}.map{|s| s.length}.max + 3
