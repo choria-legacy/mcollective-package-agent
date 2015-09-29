@@ -39,12 +39,13 @@ END_OF_USAGE
           handle_message(:raise, 1)
         else
 
-          valid_actions = ['install', 'uninstall', 'purge', 'update', 'status']
+          valid_package_actions = ['install', 'uninstall', 'purge', 'update', 'status']
+          valid_general_actions = ['apt_update', 'checkupdates']
 
-          if valid_actions.include?(ARGV[0])
+          if valid_package_actions.include?(ARGV[0])
             configuration[:action] = ARGV.shift
             configuration[:package] = ARGV.shift
-          elsif valid_actions.include?(ARGV[1])
+          elsif valid_package_actions.include?(ARGV[1])
             configuration[:package] = ARGV.shift
             configuration[:action] = ARGV.shift
           else
