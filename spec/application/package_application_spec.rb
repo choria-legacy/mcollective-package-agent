@@ -20,6 +20,7 @@ module MCollective
       describe '#post_option_parser' do
         it 'should fail if both an action and package are not supplied' do
           ARGV << 'rspec'
+          ARGV << 'install'
           expect{
             @app.post_option_parser({})
           }.to raise_error 'Please specify package name and action'
@@ -36,7 +37,7 @@ module MCollective
 
           expect{
             @app.post_option_parser({})
-          }.to raise_error 'Action has to be one of install, uninstall, purge, update, status'
+          }.to raise_error 'Action has to be one of install, uninstall, purge, update, status, apt_update, checkupdates'
         end
 
         it 'should parse "action" "package" correctly' do
