@@ -14,43 +14,48 @@ The ACTION can be one of the following:
     purge      - uninstall PACKAGE and purge related config files
     update     - update PACKAGE
     status     - determine whether PACKAGE is installed and report its version
-END_OF_USAGE
+      END_OF_USAGE
 
       option :yes,
-             :arguments   => ["--yes", "-y"],
-             :description => "Assume yes on any prompts",
-             :type        => :bool
+      :arguments   => ["--yes", "-y"],
+      :description => "Assume yes on any prompts",
+      :type        => :bool
 
       option :version,
-             :arguments   => ["--version VERSION"],
-             :description => "Optional VERSION to pass to install",
-             :type        => String,
-             :required    => false
+      :arguments   => ["--version VERSION"],
+      :description => "Optional VERSION to pass to install",
+      :type        => String,
+      :required    => false
 
       def handle_message(action, message, *args)
         messages = {1 => 'Please specify package name and action',
-                    2 => "Action has to be one of %s",
-                    3 => "Do you really want to operate on packages unfiltered? (y/n): "}
+          2 => "Action has to be one of %s",
+          3 => "Do you really want to operate on packages unfiltered? (y/n): "}
         send(action, messages[message] % args)
       end
 
       def post_option_parser(configuration)
-        if ARGV.size < 2
-          handle_message(:raise, 1)
-        else
+        valid_package_actions = ['install', 'uninstall', 'purge', 'update', 'status']
+        valid_general_actions = ['apt_update', 'checkupdates']
 
-          valid_package_actions = ['install', 'uninstall', 'purge', 'update', 'status']
-          valid_general_actions = ['apt_update', 'checkupdates']
-
-          if valid_package_actions.include?(ARGV[0])
-            configuration[:action] = ARGV.shift
-            configuration[:package] = ARGV.shift
-          elsif valid_package_actions.include?(ARGV[1])
-            configuration[:package] = ARGV.shift
-            configuration[:action] = ARGV.shift
+        if valid_package_actions.include?(ARGV[0])
+          if ARGV.size < 2
+            handle_message(:raise, 1)
           else
-            handle_message(:raise, 2, valid_actions.join(', '))
+            configuration[:action] = ARGV.shift
+            configuration[:package] = ARGV.shift
           end
+        elsif valid_package_actions.include?(ARGV[1])
+          if ARGV.size < 2
+            handle_message(:raise, 1)
+          else
+            configuration[:package] = ARGV.shift
+            configuration[:action] = ARGV.shift
+          end
+        elsif valid_general_actions.include?(ARGV[0])
+            configuration[:action] = ARGV.shift
+        else
+          handle_message(:raise, 2, valid_package_actions.join(', ') + valid_general_actions.join(', '))
         end
       end
 
