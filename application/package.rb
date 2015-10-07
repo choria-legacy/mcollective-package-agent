@@ -55,7 +55,7 @@ The ACTION can be one of the following:
         elsif valid_general_actions.include?(ARGV[0])
             configuration[:action] = ARGV.shift
         else
-          handle_message(:raise, 2, valid_package_actions.join(', ') + valid_general_actions.join(', '))
+          handle_message(:raise, 2, valid_package_actions.join(', ') + ', ' + valid_general_actions.join(', '))
         end
       end
 
