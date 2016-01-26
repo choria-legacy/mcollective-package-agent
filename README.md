@@ -11,7 +11,7 @@ methods.
 
 ## Installation
 
-Follow the [basic plugin install guide](http://projects.puppetlabs.com/projects/mcollective-plugins/wiki/InstalingPlugins).
+Follow the [basic plugin install guide](https://docs.puppetlabs.com/mcollective/deploy/plugins.html).
 
 ## Configuration
 
