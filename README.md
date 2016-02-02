@@ -73,6 +73,17 @@ Summary of Ensure:
 Finished processing 4 / 4 hosts in 18176.83 ms
 ```
 
+## Data Plugin
+
+The Package agent also supplies a data plugin which uses the Package agent to
+check the current status of a package. The data plugin will return 'missing'
+if the package is not installed or the currently installed version and can 
+be used during discovery or any other place where the MCollective discovery
+language is used.
+
+```
+mco rpc rpcutil ping -S "package('mypackage').status=missing"
+```
 
 ## Extending
 
