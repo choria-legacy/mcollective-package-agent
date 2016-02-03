@@ -28,7 +28,11 @@ dataquery :description => "package" do
           :maxlength => 50
 
     output :status,
-           :description => "Either missing or the currently installed version",
+           :description => "The currently installed version if present",
            :display_as => "Package Status"
+
+    output :installed,
+           :description => "true/false"
+           :display_as => "Is installed?"
 end
 
