@@ -15,13 +15,12 @@ module MCollective
           @ddl.stubs(:dataquery_interface).returns({:output => {}})
           @ddl.stubs(:meta).returns({:timeout => 1})
           DDL.stubs(:new).returns(@ddl)
-          @installed_reply = {:installed => false, :status => "absent"}
         end
 
         it 'should call package action with the correct arguments' do
           Agent::Package.expects(:do_pkg_action).with('rspec', 'status', {})
-         plugin.query_data('rspec')
-       end
+          plugin.query_data('rspec')
+        end
 
         it 'should display an error message if package status cannot be determined' do
           val = {}
