@@ -32,7 +32,7 @@ dataquery :description => "package" do
            :display_as => "Package Status"
 
     output :installed,
-           :description => "true/false"
+           :description => "true/false",
            :display_as => "Is installed?"
 end
 
