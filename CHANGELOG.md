@@ -2,6 +2,11 @@
 
 Change history for mcollective-package.
 
+## 4.4.1
+
+* Fix a bug when no version is passed to the agent (PR#23)
+* Add a data plugin for package status (PR#25)
+
 ## 4.4.0
 
 * Add zypper provider for SLES (MCOP-224)
