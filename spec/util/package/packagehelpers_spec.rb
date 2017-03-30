@@ -53,7 +53,7 @@ module MCollective
         end
 
         describe "#apt_update" do
-          it 'should raise if th eapt-get binary cannot be found' do
+          it 'should raise if the apt-get binary cannot be found' do
             File.expects(:exists?).with('/usr/bin/apt-get').returns(false)
             expect{
               PackageHelpers.apt_update
@@ -106,6 +106,234 @@ module MCollective
             File.expects(:exists?).with('/usr/bin/apt-get').returns(false)
             File.expects(:exists?).with('/usr/bin/zypper').returns(true)
             PackageHelpers.packagemanager.should == :zypper
+          end
+        end
+
+        describe "count" do
+          it 'should call #rpm_count if yum is present on the system' do
+            PackageHelpers.expects(:packagemanager).returns(:yum)
+            PackageHelpers.expects(:rpm_count)
+            PackageHelpers.count
+          end
+
+          it 'should call #dpkg_count if apt is present on the system' do
+            PackageHelpers.expects(:packagemanager).returns(:apt)
+            PackageHelpers.expects(:dpkg_count)
+            PackageHelpers.count
+          end
+
+          it 'should fail if no compatible package manager is present on the system' do
+            PackageHelpers.expects(:packagemanager).returns(nil)
+
+            expect{
+              PackageHelpers.count
+            }.to raise_error 'Cannot find a compatible package system to count packages'
+          end
+        end
+
+       describe "md5" do
+          it 'should call #rpm_md5 if yum is present on the system' do
+            PackageHelpers.expects(:packagemanager).returns(:yum)
+            PackageHelpers.expects(:rpm_md5)
+            PackageHelpers.md5
+          end
+
+          it 'should call #dpkg_md5 if apt is present on the system' do
+            PackageHelpers.expects(:packagemanager).returns(:apt)
+            PackageHelpers.expects(:dpkg_md5)
+            PackageHelpers.md5
+          end
+
+          it 'should fail if no compatible package manager is present on the system' do
+            PackageHelpers.expects(:packagemanager).returns(nil)
+
+            expect{
+              PackageHelpers.md5
+            }.to raise_error 'Cannot find a compatible package system to get a md5 of the package list'
+          end
+        end
+
+        describe "rpm_count" do
+          it 'should raise if rpm cannot be found on the system' do
+            File.expects(:exists?).with('/usr/bin/rpm').returns(false)
+
+            expect{
+              PackageHelpers.rpm_count
+            }.to raise_error 'Cannot find rpm at /usr/bin/rpm'
+          end
+
+          it 'should raise if the rpm command failed' do
+            File.expects(:exists?).with('/usr/bin/rpm').returns(true)
+            shell = mock
+            status = mock
+            shell.stubs(:runcommand)
+            shell.stubs(:status).returns(status)
+            status.stubs(:exitstatus).returns(-1)
+            Shell.expects(:new).with('/usr/bin/rpm -qa', :stdout => "").returns(shell)
+
+            expect{
+              PackageHelpers.rpm_count
+            }.to raise_error 'rpm command failed, exit code was -1'
+          end
+
+
+          it 'should return the count of packages' do
+            output = "package1-1.1.1.el7.x86_64
+                      package2 2.2.2.el7.noarch
+                      package3 3.3.3.el7.x86_64"
+
+            File.expects(:exists?).with('/usr/bin/rpm').returns(true)
+            shell = mock
+            status = mock
+            Shell.stubs(:new).with('/usr/bin/rpm -qa', :stdout => output).returns(shell)
+            shell.stubs(:runcommand)
+            shell.stubs(:stdout).returns(output)
+            shell.expects(:status).returns(status)
+            status.stubs(:exitstatus).returns(0)
+
+            result = PackageHelpers.rpm_count(output)
+            result.should == {:exitcode => 0, :output => "3"}
+          end
+        end
+
+        describe "rpm_md5" do
+          it 'should raise if rpm cannot be found on the system' do
+            File.expects(:exists?).with('/usr/bin/rpm').returns(false)
+
+            expect{
+              PackageHelpers.rpm_md5
+            }.to raise_error 'Cannot find rpm at /usr/bin/rpm'
+          end
+
+          it 'should raise if the rpm command failed' do
+            File.expects(:exists?).with('/usr/bin/rpm').returns(true)
+            shell = mock
+            status = mock
+            shell.stubs(:runcommand)
+            shell.stubs(:status).returns(status)
+            status.stubs(:exitstatus).returns(-1)
+            Shell.expects(:new).with('/usr/bin/rpm -qa', :stdout => "").returns(shell)
+
+            expect{
+              PackageHelpers.rpm_md5
+            }.to raise_error 'rpm command failed, exit code was -1'
+          end
+
+
+          it 'should return the md5 of packages' do
+            output = "package1-1.1.1.el7.x86_64
+                      package2 2.2.2.el7.noarch
+                      package3 3.3.3.el7.x86_64"
+
+            File.expects(:exists?).with('/usr/bin/rpm').returns(true)
+            shell = mock
+            status = mock
+            Shell.stubs(:new).with('/usr/bin/rpm -qa', :stdout => output).returns(shell)
+            shell.stubs(:runcommand)
+            shell.stubs(:stdout).returns(output)
+            shell.expects(:status).returns(status)
+            status.stubs(:exitstatus).returns(0)
+
+            result = PackageHelpers.rpm_md5(output)
+            result.should == {:exitcode => 0, :output => "f484823d241bd4315ac8741df15a91af"}
+          end
+        end
+
+        describe "dpkg_count" do
+          it 'should raise if dpkg cannot be found on the system' do
+            File.expects(:exists?).with('/usr/bin/dpkg').returns(false)
+
+            expect{
+              PackageHelpers.dpkg_count
+            }.to raise_error 'Cannot find dpkg at /usr/bin/dpkg'
+          end
+
+         it 'should raise if the dpkg command failed' do
+            File.expects(:exists?).with('/usr/bin/dpkg').returns(true)
+            shell = mock
+            status = mock
+            shell.stubs(:runcommand)
+            shell.stubs(:status).returns(status)
+            status.stubs(:exitstatus).returns(-1)
+            Shell.expects(:new).with('/usr/bin/dpkg --list', :stdout => "").returns(shell)
+
+            expect{
+              PackageHelpers.dpkg_count
+            }.to raise_error 'dpkg command failed, exit code was -1'
+          end
+
+
+          it 'should return the count of packages' do
+            output = "Desired=Unknown/Install/Remove/Purge/Hold
+| Status=Not/Inst/Conf-files/Unpacked/halF-conf/Half-inst/trig-aWait/Trig-pend
+|/ Err?=(none)/Reinst-required (Status,Err: uppercase=bad)
+||/ Name                                                  Version                                       Architecture Description
++++-=====================================================-=============================================-============-================================================================================
+ii  a11y-profile-manager-indicator                        0.1.10-0ubuntu3                               amd64        Accessibility Profile Manager - Unity desktop indicator
+rc  abiword                                               3.0.1-6ubuntu0.16.04.1                        amd64        efficient, featureful word processor with collaboration
+ii  abiword-common                                        3.0.1-6ubuntu0.16.04.1                        all          efficient, featureful word processor with collaboration -- common files
+ii  account-plugin-aim                                    3.12.11-0ubuntu3                              amd64        Messaging account plugin for AIM"
+
+            File.expects(:exists?).with('/usr/bin/dpkg').returns(true)
+            shell = mock
+            status = mock
+            Shell.stubs(:new).with('/usr/bin/dpkg --list', :stdout => output).returns(shell)
+            shell.stubs(:runcommand)
+            shell.stubs(:stdout).returns(output)
+            shell.expects(:status).returns(status)
+            status.stubs(:exitstatus).returns(0)
+
+            result = PackageHelpers.dpkg_count(output)
+            result.should == {:exitcode => 0, :output => "3"}
+          end
+        end
+
+        describe "dpkg_md5" do
+          it 'should raise if dpkg cannot be found on the system' do
+            File.expects(:exists?).with('/usr/bin/dpkg').returns(false)
+
+            expect{
+              PackageHelpers.dpkg_md5
+            }.to raise_error 'Cannot find dpkg at /usr/bin/dpkg'
+          end
+
+         it 'should raise if the dpkg command failed' do
+            File.expects(:exists?).with('/usr/bin/dpkg').returns(true)
+            shell = mock
+            status = mock
+            shell.stubs(:runcommand)
+            shell.stubs(:status).returns(status)
+            status.stubs(:exitstatus).returns(-1)
+            Shell.expects(:new).with('/usr/bin/dpkg --list', :stdout => "").returns(shell)
+
+            expect{
+              PackageHelpers.dpkg_md5
+            }.to raise_error 'dpkg command failed, exit code was -1'
+          end
+
+
+          it 'should return the md5 of packages' do
+            output = "Desired=Unknown/Install/Remove/Purge/Hold
+| Status=Not/Inst/Conf-files/Unpacked/halF-conf/Half-inst/trig-aWait/Trig-pend
+|/ Err?=(none)/Reinst-required (Status,Err: uppercase=bad)
+||/ Name                                                  Version                                       Architecture Description
++++-=====================================================-=============================================-============-================================================================================
+ii  a11y-profile-manager-indicator                        0.1.10-0ubuntu3                               amd64        Accessibility Profile Manager - Unity desktop indicator
+rc  abiword                                               3.0.1-6ubuntu0.16.04.1                        amd64        efficient, featureful word processor with collaboration
+ii  abiword-common                                        3.0.1-6ubuntu0.16.04.1                        all          efficient, featureful word processor with collaboration -- common files
+ii  account-plugin-aim                                    3.12.11-0ubuntu3                              amd64        Messaging account plugin for AIM"
+
+            File.expects(:exists?).with('/usr/bin/dpkg').returns(true)
+            shell = mock
+            status = mock
+            Shell.stubs(:new).with('/usr/bin/dpkg --list', :stdout => output).returns(shell)
+            shell.stubs(:runcommand)
+            shell.stubs(:stdout).returns(output)
+            shell.expects(:status).returns(status)
+            status.stubs(:exitstatus).returns(0)
+
+            result = PackageHelpers.dpkg_md5(output)
+            result.should == {:exitcode => 0, :output => "9608a4c69c0dd39b2ceb2cfafc36d67f"}
           end
         end
 

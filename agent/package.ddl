@@ -115,6 +115,32 @@ action "status", :description => "Get the status of a package" do
     end
 end
 
+action "count", :description => "Get number of packages installed" do
+    output :output,
+           :description => "Count of packages installed",
+           :display_as  => "Count"
+
+    output :exitcode,
+           :description => "The exitcode from the rpm/dpkg command",
+           :display_as => "Exit Code"
+    summarize do
+      aggregate summary(:output)
+    end
+end
+
+action "md5", :description => "Get md5 digest of list of packages installed" do
+    output :output,
+           :description => "md5 of list of packages installed",
+           :display_as  => "MD5"
+
+    output :exitcode,
+           :description => "The exitcode from the rpm/dpkg command",
+           :display_as => "Exit Code"
+    summarize do
+      aggregate summary(:output)
+    end
+end
+
 action "yum_clean", :description => "Clean the YUM cache" do
     input :mode,
           :prompt      => "Yum clean mode",

@@ -22,6 +22,18 @@ module MCollective
         Package.do_pkg_action(request[:package], :status, reply)
       end
 
+      action 'count' do
+        result = package_helper.count
+        reply[:exitcode] = result[:exitcode]
+        reply[:output] = result[:output]
+      end
+
+     action 'md5' do
+        result = package_helper.md5
+        reply[:exitcode] = result[:exitcode]
+        reply[:output] = result[:output]
+      end
+
       action 'yum_clean' do
         clean_mode = request[:mode] || @config.pluginconf.fetch('package.yum_clean_mode', 'all')
         result = package_helper.yum_clean(clean_mode)
