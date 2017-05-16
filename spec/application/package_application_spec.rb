@@ -95,6 +95,13 @@ module MCollective
           @app.expects(:handle_message).never
           @app.validate_configuration({:yes => true})
         end
+
+        it 'should not prompt when action count even if yes flag is unset and filter is empty' do
+          Util.expects(:empty_filter?).never
+          @app.stubs(:options).returns({:filter => {}})
+          @app.expects(:handle_message).never
+          @app.validate_configuration({:action => 'count'})
+        end
       end
 
       describe '#main' do

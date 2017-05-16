@@ -59,7 +59,7 @@ END_OF_USAGE
       end
 
       def validate_configuration(configuration)
-        unless configuration[:action] == 'status'
+        unless [ 'status', 'count', 'md5'].include?(configuration[:action])
           if Util.empty_filter?(options[:filter]) && !configuration[:yes]
             handle_message(:print, 3)
 
