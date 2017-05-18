@@ -6,6 +6,7 @@ module MCollective
       usage <<-END_OF_USAGE
 mco package [OPTIONS] [FILTERS] <ACTION> <PACKAGE>
 Usage: mco package <PACKAGE> <install|uninstall|purge|update|status>
+       mco package <count|md5>
 
 The ACTION can be one of the following:
 
