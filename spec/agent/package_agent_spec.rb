@@ -125,6 +125,43 @@ module MCollective
         end
       end
 
+      describe '#count' do
+
+        it 'should perform package count' do
+          helper = mock
+          @agent.stubs(:package_helper).returns(helper)
+          helper.expects(:count).returns({:exitcode => 0, :output => 'pkgcount'})
+
+          result = @agent.call(:count)
+          result.should be_successful
+          result.should have_data_items({:exitcode => 0, :output => 'pkgcount'})
+        end
+
+        it 'should fail if the command failed' do
+          @agent.stubs(:package_helper).raises('rspec_error')
+          result = @agent.call(:count)
+          result.should be_unknown_error
+        end
+      end
+
+      describe '#md5' do
+        it 'should perform package list md5' do
+          helper = mock
+          @agent.stubs(:package_helper).returns(helper)
+          helper.expects(:md5).returns({:exitcode => 0, :output => 'pkgmd5'})
+
+          result = @agent.call(:md5)
+          result.should be_successful
+          result.should have_data_items({:exitcode => 0, :output => 'pkgmd5'})
+        end
+
+        it 'should fail if the command failed' do
+          @agent.stubs(:package_helper).raises('rspec_error')
+          result = @agent.call(:md5)
+          result.should be_unknown_error
+        end
+      end
+
       describe '#apt_update' do
         it 'should perform an apt update' do
           helper = mock

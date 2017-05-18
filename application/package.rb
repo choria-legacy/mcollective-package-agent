@@ -6,6 +6,7 @@ module MCollective
       usage <<-END_OF_USAGE
 mco package [OPTIONS] [FILTERS] <ACTION> <PACKAGE>
 Usage: mco package <PACKAGE> <install|uninstall|purge|update|status>
+       mco package <count|md5>
 
 The ACTION can be one of the following:
 
@@ -14,6 +15,8 @@ The ACTION can be one of the following:
     purge      - uninstall PACKAGE and purge related config files
     update     - update PACKAGE
     status     - determine whether PACKAGE is installed and report its version
+    count      - determine number of packages installed
+    md5        - determine md5 of package list
 END_OF_USAGE
 
       option :yes,
@@ -35,15 +38,18 @@ END_OF_USAGE
       end
 
       def post_option_parser(configuration)
-        if ARGV.size < 2
+        valid_global_actions = ['count', 'md5']
+        if (ARGV.size < 2) and !valid_global_actions.include?(ARGV[0])
           handle_message(:raise, 1)
         else
 
-          valid_actions = ['install', 'uninstall', 'purge', 'update', 'status']
+          valid_actions = ['install', 'uninstall', 'purge', 'update', 'status'].concat(valid_global_actions)
 
           if valid_actions.include?(ARGV[0])
             configuration[:action] = ARGV.shift
-            configuration[:package] = ARGV.shift
+            unless valid_global_actions.include?(ARGV[0])
+              configuration[:package] = ARGV.shift
+            end 
           elsif valid_actions.include?(ARGV[1])
             configuration[:package] = ARGV.shift
             configuration[:action] = ARGV.shift
@@ -54,7 +60,7 @@ END_OF_USAGE
       end
 
       def validate_configuration(configuration)
-        unless configuration[:action] == 'status'
+        unless [ 'status', 'count', 'md5'].include?(configuration[:action])
           if Util.empty_filter?(options[:filter]) && !configuration[:yes]
             handle_message(:print, 3)
 
@@ -79,7 +85,11 @@ END_OF_USAGE
           pkg_result.each do |result|
             if result[:statuscode] == 0
               if pkg.verbose
-                puts(pattern % [result[:sender], result[:data][:ensure]])
+                if ['count', 'md5'].include?(configuration[:action])
+                  puts(pattern % [result[:sender], result[:data][:output]])
+                else
+                  puts(pattern % [result[:sender], result[:data][:ensure]])
+                end
               else
                 if configuration[:action] == 'status'
                   if result[:data][:ensure] == 'absent'
@@ -88,6 +98,11 @@ END_OF_USAGE
                     status = "%s-%s.%s" % [result[:data][:name], result[:data][:ensure], result[:data][:arch]]
                   end
                   puts(pattern % [result[:sender], status])
+                else
+                  if ['count', 'md5'].include?(configuration[:action])
+                    status = "%s" % [result[:data][:output]]
+                    puts(pattern % [result[:sender], status])
+                  end
                 end
               end
             else

@@ -36,7 +36,7 @@ module MCollective
 
           expect{
             @app.post_option_parser({})
-          }.to raise_error 'Action has to be one of install, uninstall, purge, update, status'
+          }.to raise_error 'Action has to be one of install, uninstall, purge, update, status, count, md5'
         end
 
         it 'should parse "action" "package" correctly' do
@@ -95,6 +95,20 @@ module MCollective
           @app.expects(:handle_message).never
           @app.validate_configuration({:yes => true})
         end
+
+        it 'should not prompt when action count even if yes flag is unset and filter is empty' do
+          Util.expects(:empty_filter?).never
+          @app.stubs(:options).returns({:filter => {}})
+          @app.expects(:handle_message).never
+          @app.validate_configuration({:action => 'count'})
+        end
+
+        it 'should not prompt when action md5 even if yes flag is unset and filter is empty' do
+          Util.expects(:empty_filter?).never
+          @app.stubs(:options).returns({:filter => {}})
+          @app.expects(:handle_message).never
+          @app.validate_configuration({:action => 'md5'})
+        end
       end
 
       describe '#main' do
@@ -147,6 +161,28 @@ module MCollective
                                                                                           :name => 'rspec'}}])
           package.expects(:verbose).returns(false)
           @app.expects(:puts).with(pattern % ['rspec', 'rspec-2.1.x86'])
+          @app.main
+        end
+
+        it 'should display the correct output for a count of packages' do
+          @app.stubs(:configuration).returns({:action => 'count'})
+          package.expects(:send).with('count', :package => nil).returns([{:sender => 'rspec',
+                                                         :statuscode => 0,
+                                                         :data => {:exitcode => 0,
+                                                                   :output => 'pkgcount'}}])
+          package.expects(:verbose).returns(false)
+          @app.expects(:puts).with(pattern % ['rspec', 'pkgcount'])
+          @app.main
+        end
+
+        it 'should display the correct output for a MD5 of the package list' do
+          @app.stubs(:configuration).returns({:action => 'md5'})
+          package.expects(:send).with('md5', :package => nil).returns([{:sender => 'rspec',
+                                                         :statuscode => 0,
+                                                         :data => {:exitcode => 0,
+                                                                   :output => 'pkgmd5'}}])
+          package.expects(:verbose).returns(false)
+          @app.expects(:puts).with(pattern % ['rspec', 'pkgmd5'])
           @app.main
         end
       end

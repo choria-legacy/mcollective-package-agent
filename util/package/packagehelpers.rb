@@ -1,7 +1,84 @@
+require 'digest'
+
 module MCollective
   module Util
     module Package
       class PackageHelpers
+
+        def self.count
+          manager = packagemanager
+          if manager == :yum
+            return rpm_count
+          elsif manager == :apt
+            return dpkg_count
+          else
+            raise 'Cannot find a compatible package system to count packages'
+          end
+        end
+
+        def self.rpm_count(output = "")
+          raise "Cannot find rpm at /usr/bin/rpm" unless File.exists?("/usr/bin/rpm")
+          result = {:exitcode => nil,
+                    :output => ""}
+          cmd = Shell.new("/usr/bin/rpm -qa", :stdout => output)
+          cmd.runcommand
+          result[:exitcode] = cmd.status.exitstatus
+          result[:output] = output.split("\n").select{ |line| line != "" }.size.to_s
+
+          raise "rpm command failed, exit code was #{result[:exitcode]}" unless result[:exitcode] == 0
+          return result
+        end
+
+        def self.dpkg_count(output = "")
+          raise "Cannot find dpkg at /usr/bin/dpkg" unless File.exists?("/usr/bin/dpkg")
+          result = {:exitcode => nil,
+                    :output => ""}
+          cmd = Shell.new("/usr/bin/dpkg --list", :stdout => output)
+          cmd.runcommand
+          result[:exitcode] = cmd.status.exitstatus
+          result[:output] = output.split("\n").select{ |line| line[0..1] == "ii"}.size.to_s
+
+          raise "dpkg command failed, exit code was #{result[:exitcode]}" unless result[:exitcode] == 0
+          return result
+        end
+
+        def self.md5
+          manager = packagemanager
+          if manager == :yum
+            return rpm_md5
+          elsif manager == :apt
+            return dpkg_md5
+          else
+            raise 'Cannot find a compatible package system to get a md5 of the package list'
+          end
+        end
+
+
+        def self.rpm_md5(output = "")
+          raise "Cannot find rpm at /usr/bin/rpm" unless File.exists?("/usr/bin/rpm")
+          result = {:exitcode => nil,
+                    :output => ""}
+          cmd = Shell.new("/usr/bin/rpm -qa", :stdout => output)
+          cmd.runcommand
+          result[:exitcode] = cmd.status.exitstatus
+          result[:output] = Digest::MD5.new.hexdigest(output)
+
+          raise "rpm command failed, exit code was #{result[:exitcode]}" unless result[:exitcode] == 0
+          return result
+        end
+
+        def self.dpkg_md5(output = "")
+          raise "Cannot find dpkg at /usr/bin/dpkg" unless File.exists?("/usr/bin/dpkg")
+          result = {:exitcode => nil,
+                    :output => ""}
+          cmd = Shell.new("/usr/bin/dpkg --list", :stdout => output)
+          cmd.runcommand
+          result[:exitcode] = cmd.status.exitstatus
+          result[:output] = Digest::MD5.new.hexdigest(output.split("\n").select{ |line| line[0..1] == "ii"}.join("\n"))
+
+          raise "dpkg command failed, exit code was #{result[:exitcode]}" unless result[:exitcode] == 0
+          return result
+        end
 
         def self.yum_clean(clean_mode)
           raise "Cannot find yum at /usr/bin/yum" unless File.exists?("/usr/bin/yum")
