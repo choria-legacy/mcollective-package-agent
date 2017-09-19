@@ -2,6 +2,10 @@
 
 Change history for mcollective-package.
 
+## 4.6.0
+
+* Add count and md5 methods (MCOP-593)
+
 ## 4.5.0
 
 * Fix a bug when no version is passed to the agent (PR#23)
