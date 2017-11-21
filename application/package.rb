@@ -38,7 +38,7 @@ END_OF_USAGE
       end
 
       def post_option_parser(configuration)
-        valid_global_actions = ['count', 'md5']
+        valid_global_actions = ['count', 'md5', 'yum_clean', 'yum_checkupdates', 'apt_update', 'checkupdates', 'yum_checkupdates']
         if (ARGV.size < 2) and !valid_global_actions.include?(ARGV[0])
           handle_message(:raise, 1)
         else
