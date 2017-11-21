@@ -10,13 +10,19 @@ Usage: mco package <PACKAGE> <install|uninstall|purge|update|status>
 
 The ACTION can be one of the following:
 
-    install    - install PACKAGE
-    uninstall  - uninstall PACKAGE
-    purge      - uninstall PACKAGE and purge related config files
-    update     - update PACKAGE
-    status     - determine whether PACKAGE is installed and report its version
-    count      - determine number of packages installed
-    md5        - determine md5 of package list
+    install          - install PACKAGE
+    uninstall        - uninstall PACKAGE
+    purge            - uninstall PACKAGE and purge related config files
+    update           - update PACKAGE
+    status           - determine whether PACKAGE is installed and report its version
+    count            - determine number of packages installed
+    md5              - determine md5 of package list
+    yum_clean        - clean the yum cache
+    yum_checkupdates - display available updates from yum
+    apt_update       - update all available packages
+    apt_checkupdates - display available updates from apt
+    checkupdates     - display available updates
+
 END_OF_USAGE
 
       option :yes,
@@ -38,7 +44,7 @@ END_OF_USAGE
       end
 
       def post_option_parser(configuration)
-        valid_global_actions = ['count', 'md5', 'yum_clean', 'yum_checkupdates', 'apt_update', 'checkupdates', 'yum_checkupdates']
+        valid_global_actions = ['count', 'md5', 'yum_clean', 'yum_checkupdates', 'apt_update', 'checkupdates', 'apt_checkupdates']
         if (ARGV.size < 2) and !valid_global_actions.include?(ARGV[0])
           handle_message(:raise, 1)
         else
