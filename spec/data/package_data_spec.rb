@@ -18,13 +18,13 @@ module MCollective
         end
 
         it 'should call package action with the correct arguments' do
-          Agent::Package.expects(:do_pkg_action).with('rspec', 'status', {})
+          Agent::Package.expects(:do_pkg_action).with('rspec', :status, {})
           plugin.query_data('rspec')
         end
 
         it 'should display an error message if package status cannot be determined' do
           val = {}
-          Agent::Package.expects(:do_pkg_action).with('rspec', 'status', val).raises('error')
+          Agent::Package.expects(:do_pkg_action).with('rspec', :status, val).raises('error')
           MCollective::Log.expects(:warn).with("Could not get status for package rspec: error")
           plugin.query_data('rspec')
         end
