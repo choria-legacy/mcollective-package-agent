@@ -2,7 +2,7 @@ metadata :name => "package",
          :description => "Checks the status of a package",
          :author => "R.I.Pienaar",
          :license => "ASL 2.0",
-         :version => "4.6.0",
+         :version => "4.7.0",
          :url => "https://github.com/puppetlabs/mcollective-package-agent",
          :timeout => 3
 

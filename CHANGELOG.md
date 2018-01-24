@@ -2,6 +2,11 @@
 
 Change history for mcollective-package.
 
+## 4.7.0
+
+* Fix the package data provider when checking for installed packages (MCOP-609)
+* Allow additional yum and apt operations via the client, as noted in `mco package --help` (MCOP-607)
+
 ## 4.6.0
 
 * Add count and md5 methods (MCOP-593)
